@@ -1,4 +1,16 @@
 <template>
+  <base-dialog v-if="inputIsInvalid" title="Invalid Input">
+    <template #default>
+      <p>Unfortunately, at least one input value is invalid.</p>
+      <p>
+        Please check all inputs and make sure you enter at least a few
+        characters into each input field
+      </p>
+    </template>
+    <template #actions>
+      <base-button @click="confirmError">Okay</base-button>
+    </template>
+  </base-dialog>
   <div>
     <base-card>
       <base-button
@@ -21,13 +33,16 @@
 <script>
 import AddResource from '@/components/learning-resources/AddResource.vue';
 import StoredResources from '@/components/learning-resources/StoredResources.vue';
+import BaseDialog from '@/components/ui/BaseDialog.vue';
 export default {
   components: {
     StoredResources,
-    AddResource
+    AddResource,
+    BaseDialog
   },
   data() {
     return {
+      inputIsInvalid: false,
       selectedTab: 'stored-resources',
       storedResources: [
         {
@@ -48,7 +63,8 @@ export default {
   provide() {
     return {
       resources: this.storedResources,
-      addResource: this.addResource
+      addResource: this.addResource,
+      removeResource: this.removeResource
     };
   },
   computed: {
@@ -64,13 +80,29 @@ export default {
       this.selectedTab = tab;
     },
     addResource(title, description, link) {
+      if (
+        title.trim() === '' ||
+        description.trim() === '' ||
+        link.trim() === ''
+      ) {
+        this.inputIsInvalid = true;
+        return;
+      }
       const resourceInfo = {
+        id: new Date().toISOString(),
         title,
         description,
         link
       };
       this.storedResources.unshift(resourceInfo);
       this.selectedTab = 'stored-resources';
+    },
+    confirmError() {
+      this.inputIsInvalid = false;
+    },
+    removeResource(id) {
+      const resIndex = this.storedResources.findIndex(res => res.id === id);
+      this.storedResources.splice(resIndex, 1);
     }
   }
 };
