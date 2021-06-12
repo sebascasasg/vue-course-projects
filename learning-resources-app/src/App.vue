@@ -1,15 +1,18 @@
 <template>
   <div>
+    <app-header title="RememberMe"></app-header>
     <stored-resources :resources="storedResources"></stored-resources>
   </div>
 </template>
 
 <script>
 import StoredResources from '@/components/learning-resources/StoredResources.vue';
+import AppHeader from '@/components/layouts/AppHeader.vue';
 
 export default {
   components: {
-    StoredResources
+    StoredResources,
+    AppHeader
   },
   data() {
     return {
